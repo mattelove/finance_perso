@@ -1849,3 +1849,79 @@ body.no-scroll { overflow: hidden; }
   font-size: .72rem;
   color: var(--fg-faint);
 }
+
+/* =========================================================
+   Connexion Supabase
+   ========================================================= */
+
+/* Tant que la connexion et les données ne sont pas vérifiées, seule la
+   navigation (et son bouton de déconnexion) et le bandeau d'erreur s'affichent. */
+html[data-auth="pending"] body > :not(.nav):not(.cloud-banner) { visibility: hidden; }
+
+/* Bouton de déconnexion, rangé à droite de la navigation */
+.nav-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.nav-logout .icon { width: 16px; height: 16px; }
+.nav-logout:disabled { opacity: .5; cursor: default; }
+
+/* Sur téléphone, l'icône seule : le libellé reste lu par les lecteurs d'écran. */
+@media (max-width: 480px) {
+  .nav-logout-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/* Page de connexion */
+.login-card {
+  max-width: 380px;
+  margin: 12vh auto 0;
+  padding: 1.75rem;
+}
+.login-card h1 { margin-bottom: 1.5rem; }
+.login-card .form-error { margin-top: 0; }
+.login-card .btn:disabled { opacity: .6; cursor: default; }
+
+/* Bandeau d'erreur d'enregistrement ou de connexion, toujours visible */
+.cloud-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  width: min(560px, calc(100% - 2rem));
+  padding: .75rem .9rem;
+  font-size: .88rem;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+}
+.cloud-banner-text { flex: 1; }
+.cloud-banner-close {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.cloud-banner-close:hover { color: var(--fg); }

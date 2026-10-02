@@ -1,6 +1,6 @@
 /* =========================================================
    Finances perso — page Transactions
-   Vanilla JS, stockage localStorage, aucune dépendance.
+   Vanilla JS, stockage Supabase (store.js), aucune autre dépendance.
    Constantes et formatteurs viennent de shared.js ;
    la barre de filtre temporel vient de time-filter.js.
    ========================================================= */
@@ -629,20 +629,28 @@ function applyImport(list, accounts, importedCategories = null) {
   transactions = list;
   startBalances = accounts;
 
-  saveTransactions(transactions);
-  saveAccounts(startBalances);
+  const saves = [saveTransactions(transactions), saveAccounts(startBalances)];
 
   // Fichier sans catégories (ancien export) : les catégories actuelles sont gardées.
   if (importedCategories) {
     categories = importedCategories;
-    saveCategories(categories);
+    saves.push(saveCategories(categories));
     refreshCategories();
     if (pruneCatFilter()) syncCatFilterButton();
   }
 
   render();
 
-  showNotice(`${list.length} transaction(s) importée(s). Les données précédentes ont été remplacées.`);
+  // Le message de réussite attend la confirmation de Supabase.
+  showNotice(`Envoi de ${list.length} transaction(s) vers Supabase…`);
+  Promise.all(saves).then((results) => {
+    if (results.every(Boolean)) {
+      showNotice(`${list.length} transaction(s) importée(s). Les données précédentes ont été remplacées.`);
+    } else {
+      showNotice('L’import n’a pas pu être enregistré entièrement dans Supabase. '
+        + 'Rechargez la page pour voir ce qui a été sauvegardé, puis relancez l’import.', true);
+    }
+  });
 }
 
 /* ---------------------------------------------------------

@@ -2,7 +2,8 @@
    Finances perso — socle commun aux pages Transactions et Dashboard
    Constantes, formatteurs et accès au stockage, partagés pour
    éviter toute divergence entre les deux pages.
-   Chargé en script classique (pas de module) : fonctionne en file://.
+   Chargé en script classique (pas de module). Le stockage passe par
+   Supabase : voir store.js, chargé après ce fichier.
    ========================================================= */
 
 'use strict';
@@ -10,14 +11,6 @@
 /* ---------------------------------------------------------
    Configuration
    --------------------------------------------------------- */
-
-const STORAGE_KEY = 'finances-perso.transactions.v1';
-
-/** Clé dédiée aux catégories personnalisées, séparée de celle des transactions. */
-const CATEGORIES_KEY = 'finances-perso.categories.v1';
-
-/** Clé dédiée aux soldes de départ des comptes. */
-const ACCOUNTS_KEY = 'finances-perso.accounts.v1';
 
 /** Libellés lisibles des types (clé interne -> affichage). */
 const TYPES = {
@@ -74,29 +67,23 @@ function el(tag, className, text) {
 }
 
 /* ---------------------------------------------------------
-   Persistance (localStorage)
+   Persistance (Supabase, via store.js)
    --------------------------------------------------------- */
 
-/** Charge les transactions, en tolérant un stockage indisponible ou corrompu. */
+/*
+ * Les données sont chargées depuis Supabase avant le lancement du script de la
+ * page : les load*() restent donc synchrones. Les save*() renvoient une promesse
+ * (vrai si l'enregistrement a réussi) ; un échec affiche un bandeau d'erreur.
+ */
+
+/** Charge les transactions (copies : les modifier n'altère pas le cache). */
 function loadTransactions() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    // Navigation privée, stockage bloqué ou JSON invalide : on repart d'une liste vide.
-    console.warn('Lecture du stockage impossible, démarrage à vide.', err);
-    return [];
-  }
+  return cloud.transactions.map((tx) => ({ ...tx }));
 }
 
-/** Sauvegarde la liste. Une erreur d'écriture ne doit pas casser l'interface. */
+/** Sauvegarde la liste complète ; seules les différences partent vers Supabase. */
 function saveTransactions(list) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch (err) {
-    console.warn('Écriture du stockage impossible, les données ne survivront pas au rechargement.', err);
-  }
+  return cloudSaveTransactions(list);
 }
 
 /* ---------------------------------------------------------
@@ -206,14 +193,7 @@ function normalizeCategoryList(list) {
  * sinon les valeurs par défaut.
  */
 function loadCategories() {
-  let stored = {};
-  try {
-    const raw = localStorage.getItem(CATEGORIES_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) stored = parsed;
-  } catch (err) {
-    console.warn('Catégories personnalisées illisibles, retour aux valeurs par défaut.', err);
-  }
+  const stored = cloud.categories;
 
   const out = {};
   for (const type of Object.keys(DEFAULT_CATEGORIES)) {
@@ -226,11 +206,7 @@ function loadCategories() {
 
 /** Enregistre les catégories personnalisées. */
 function saveCategories(map) {
-  try {
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(map));
-  } catch (err) {
-    console.warn('Écriture des catégories impossible.', err);
-  }
+  return cloudSaveCategories(map);
 }
 
 /* ---------------------------------------------------------
@@ -326,17 +302,10 @@ function transferDirection(tx) {
 function loadAccounts() {
   const base = { courant: 0, epargne: 0 };
 
-  try {
-    const raw = localStorage.getItem(ACCOUNTS_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    if (!parsed || typeof parsed !== 'object') return base;
-
-    for (const key of Object.keys(base)) {
-      const value = Number(parsed[key]);
-      if (Number.isFinite(value)) base[key] = value;
-    }
-  } catch (err) {
-    console.warn('Soldes de départ illisibles, remis à zéro.', err);
+  // Un compte jamais enregistré garde son solde de départ à zéro.
+  for (const key of Object.keys(base)) {
+    const value = Number(cloud.accounts[key]);
+    if (Number.isFinite(value)) base[key] = value;
   }
 
   return base;
@@ -344,11 +313,7 @@ function loadAccounts() {
 
 /** Enregistre les soldes de départ. */
 function saveAccounts(start) {
-  try {
-    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(start));
-  } catch (err) {
-    console.warn('Écriture des soldes de départ impossible.', err);
-  }
+  return cloudSaveAccounts(start);
 }
 
 /**

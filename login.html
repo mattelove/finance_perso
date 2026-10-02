@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion — Finances</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="card login-card">
+    <p class="eyebrow">Finances personnelles</p>
+    <h1>Connexion</h1>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+      </div>
+
+      <p class="form-error" id="loginError" role="alert" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Se connecter</button>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"
+          integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"
+          crossorigin="anonymous"></script>
+  <script src="supabase-client.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

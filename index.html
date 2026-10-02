@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-auth="pending">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +13,12 @@
     <a class="nav-link is-current" href="index.html" aria-current="page">Transactions</a>
     <a class="nav-link" href="dashboard.html">Dashboard</a>
     <a class="nav-link" href="comptes.html">Comptes</a>
+    <button type="button" class="nav-link nav-logout" id="logoutBtn">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+        <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4m0 0 4-4m-4 4h11"/>
+      </svg>
+      <span class="nav-logout-label">Se déconnecter</span>
+    </button>
   </nav>
 
   <!-- ============ En-tête de page ============ -->
@@ -343,8 +349,13 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"
+          integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"
+          crossorigin="anonymous"></script>
+  <script src="supabase-client.js"></script>
   <script src="shared.js"></script>
   <script src="time-filter.js"></script>
-  <script src="script.js"></script>
+  <!-- store.js vérifie la connexion, charge les données, puis lance script.js -->
+  <script src="store.js" data-app="script.js"></script>
 </body>
 </html>

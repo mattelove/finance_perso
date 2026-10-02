@@ -2,7 +2,7 @@
    Finances perso — page Dashboard
    Indicateurs, Sankey des flux et graphique multi-courbes,
    tous construits à la main en SVG. Aucune dépendance.
-   Les données viennent du même localStorage que la page Transactions.
+   Les données viennent de Supabase, comme pour la page Transactions.
    ========================================================= */
 
 'use strict';
