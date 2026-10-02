@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transactions — Finances</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ Navigation ============ -->
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="nav-link is-current" href="index.html" aria-current="page">Transactions</a>
+    <a class="nav-link" href="dashboard.html">Dashboard</a>
+    <a class="nav-link" href="comptes.html">Comptes</a>
+  </nav>
+
+  <!-- ============ En-tête de page ============ -->
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Finances personnelles</p>
+      <h1>Transactions</h1>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-ghost" id="exportBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+          <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        Exporter
+      </button>
+
+      <button type="button" class="btn btn-ghost" id="importBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+          <path d="M12 15V3m0 0L8 7m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        Importer
+      </button>
+
+      <!-- Déclenché par le bouton ci-dessus, jamais affiché -->
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+
+      <!-- Import additif : colle un bloc JSON, sans passer par un fichier -->
+      <button type="button" class="btn btn-ghost" id="pasteBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+          <path d="m8 7-5 5 5 5m8-10 5 5-5 5"/>
+        </svg>
+        + Importer des transactions via du code
+      </button>
+
+      <button type="button" class="btn btn-ghost" id="openCatsBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+          <path d="M4 6h16M4 12h16M4 18h10"/>
+        </svg>
+        Modifier les catégories
+      </button>
+
+      <button type="button" class="btn btn-primary" id="openFormBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Ajouter une transaction
+      </button>
+    </div>
+  </header>
+
+  <!-- Retour d'import/export : erreur de validation ou confirmation de succès -->
+  <p class="form-error page-notice" id="ioNotice" hidden></p>
+
+  <!-- ============ Résumé rapide (calculé à partir de la liste) ============ -->
+  <section class="stats" aria-label="Résumé">
+    <article class="card stat">
+      <p class="stat-label">Solde</p>
+      <p class="stat-value" id="statBalance">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Revenus</p>
+      <p class="stat-value" id="statIncome">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Dépenses</p>
+      <p class="stat-value" id="statExpense">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Opérations</p>
+      <p class="stat-value" id="statCount">0</p>
+    </article>
+  </section>
+
+  <!-- ============ Liste des transactions ============ -->
+  <section class="card list-card" aria-label="Liste des transactions">
+    <div class="list-head">
+      <h2>Historique</h2>
+      <!-- Filtre par type, purement visuel côté client -->
+      <div class="filters" id="filters" role="group" aria-label="Filtrer par type">
+        <button type="button" class="chip is-active" data-filter="all">Tout</button>
+        <button type="button" class="chip" data-filter="depense">Dépenses</button>
+        <button type="button" class="chip" data-filter="revenu">Revenus</button>
+        <button type="button" class="chip" data-filter="investissement">Investissements</button>
+        <button type="button" class="chip" data-filter="transfert">Transferts</button>
+      </div>
+
+      <!-- Filtre par catégorie : chip + popover, contenu construit par script.js -->
+      <div class="cat-filter" id="catFilter">
+        <button type="button" class="chip chip-cats" id="catFilterBtn"
+                aria-haspopup="dialog" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon-sm">
+            <path d="M3 5h18M6 12h12M10 19h4"/>
+          </svg>
+          <span>Catégories</span>
+          <span class="chip-count" id="catFilterCount" hidden></span>
+        </button>
+
+        <div class="popover popover-right card" id="catFilterPop"
+             role="dialog" aria-label="Filtrer par catégorie" hidden>
+          <div class="cat-filter-head">
+            <p class="cat-filter-title">Filtrer par catégorie</p>
+            <button type="button" class="btn-link" id="catFilterClear">Tout effacer</button>
+          </div>
+
+          <!-- Un groupe par type, reconstruit à chaque ouverture -->
+          <div class="cat-filter-groups" id="catFilterGroups"></div>
+
+          <p class="cat-filter-hint">Aucune sélection = toutes les catégories.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barre de filtre temporel, construite par time-filter.js -->
+    <div id="timeBar"></div>
+
+    <!-- Rempli dynamiquement par script.js -->
+    <ul class="tx-list" id="txList"></ul>
+
+    <!-- Affiché quand la liste (filtrée) est vide -->
+    <div class="empty" id="emptyState" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="empty-icon">
+        <path d="M3 7h18M3 12h18M3 17h10"/>
+      </svg>
+      <p class="empty-title">Aucune transaction</p>
+      <p class="empty-text">Ajoutez votre première opération pour commencer le suivi.</p>
+    </div>
+  </section>
+
+  <!-- ============ Modal : formulaire d'ajout ============ -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+
+    <div class="modal-panel card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 id="modalTitle">Nouvelle transaction</h2>
+        <button type="button" class="btn-icon" data-close aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="txForm" novalidate>
+        <div class="field">
+          <label for="type">Type</label>
+          <div class="select-wrap">
+            <select id="type" name="type" required>
+              <option value="depense">Dépense</option>
+              <option value="revenu">Revenu</option>
+              <option value="investissement">Investissement</option>
+              <option value="transfert">Transfert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="name">Nom</label>
+          <input type="text" id="name" name="name" placeholder="Ex. Courses du samedi" maxlength="60" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="amount">Montant</label>
+            <div class="input-affix">
+              <input type="number" id="amount" name="amount" placeholder="0,00" step="0.01" min="0" required>
+              <span class="affix">€</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="category">Catégorie</label>
+          <div class="select-wrap">
+            <!-- Options injectées dynamiquement selon le type choisi -->
+            <select id="category" name="category" required></select>
+          </div>
+        </div>
+
+        <!-- Sens du transfert : visible uniquement quand le type est "Transfert" -->
+        <div class="field" id="directionField" hidden>
+          <label for="direction">Sens</label>
+          <div class="select-wrap">
+            <select id="direction" name="direction">
+              <option value="vers-epargne">Vers Épargne</option>
+              <option value="depuis-epargne">Depuis Épargne</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Remboursement : visible uniquement quand le type est "Revenu" -->
+        <div class="field" id="linkField" hidden>
+          <label>Remboursement <span class="label-hint">optionnel</span></label>
+
+          <button type="button" class="btn btn-ghost btn-block" id="linkToggle">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon-sm">
+              <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>
+            </svg>
+            Lier à une dépense
+          </button>
+
+          <!-- Sélecteur, rempli par script.js -->
+          <div class="link-picker" id="linkPicker" hidden>
+            <input type="text" id="linkSearch" placeholder="Rechercher une dépense…" autocomplete="off">
+            <ul class="link-list" id="linkList"></ul>
+            <p class="link-empty" id="linkEmpty" hidden>Aucune dépense ne correspond.</p>
+          </div>
+
+          <!-- Résumé du lien retenu -->
+          <div class="link-chosen" id="linkChosen" hidden>
+            <span class="badge badge-link" id="linkChosenText"></span>
+            <button type="button" class="btn-icon btn-icon-sm" id="linkClear" aria-label="Retirer le lien">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon-sm"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="form-error" id="formError" hidden></p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ Modal : confirmation d'import ============ -->
+  <div class="modal modal-confirm" id="confirmModal" hidden>
+    <div class="modal-backdrop" data-confirm-close></div>
+
+    <div class="modal-panel card modal-panel-sm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-head">
+        <h2 id="confirmTitle">Remplacer les transactions ?</h2>
+        <button type="button" class="btn-icon" data-confirm-close aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="confirm-text" id="confirmText"></p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-confirm-close>Annuler</button>
+        <button type="button" class="btn btn-primary" id="confirmOk">Remplacer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal : import additif par collage de code ============ -->
+  <div class="modal" id="pasteModal" hidden>
+    <div class="modal-backdrop" data-paste-close></div>
+
+    <div class="modal-panel card" role="dialog" aria-modal="true" aria-labelledby="pasteTitle">
+      <div class="modal-head">
+        <h2 id="pasteTitle">Importer des transactions via du code</h2>
+        <button type="button" class="btn-icon" data-paste-close aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="pasteInput">Bloc JSON</label>
+        <textarea id="pasteInput" class="paste-input" rows="9" spellcheck="false" autocomplete="off"
+                  placeholder='[{ "type": "depense", "name": "Courses", "amount": 42.5, "category": "Courses", "date": "2026-09-19" }]'></textarea>
+        <p class="paste-hint">
+          Un tableau JSON de transactions. Les champs « id » et « createdAt » sont générés s’ils
+          sont absents. Les transactions déjà enregistrées sont conservées.
+        </p>
+      </div>
+
+      <p class="form-error" id="pasteError" hidden></p>
+
+      <!-- Résumé de contrôle, affiché après validation et avant l'ajout définitif -->
+      <div class="paste-summary" id="pasteSummary" hidden>
+        <p class="paste-summary-title" id="pasteSummaryTitle"></p>
+        <ul class="paste-summary-list" id="pasteSummaryList"></ul>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-paste-close>Annuler</button>
+        <button type="button" class="btn btn-primary" id="pasteSubmit">Ajouter les transactions</button>
+        <!-- Confirmation finale : distincte du bouton de contrôle, pour qu'un
+             double-clic ne puisse pas enchaîner validation et ajout. -->
+        <button type="button" class="btn btn-primary paste-confirm" id="pasteConfirm" hidden>Confirmer l’ajout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal : gestion des catégories ============ -->
+  <div class="modal" id="catsModal" hidden>
+    <div class="modal-backdrop" data-cats-close></div>
+
+    <div class="modal-panel card" role="dialog" aria-modal="true" aria-labelledby="catsTitle">
+      <div class="modal-head">
+        <h2 id="catsTitle">Catégories</h2>
+        <button type="button" class="btn-icon" data-cats-close aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Un onglet par type de transaction, généré par script.js -->
+      <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Type de transaction"></div>
+
+      <!-- Catégories du type actif -->
+      <ul class="cat-list" id="catList"></ul>
+
+      <!-- Ajout d'une catégorie au type actif -->
+      <form class="cat-add" id="catAddForm">
+        <input type="text" id="catInput" placeholder="Nouvelle catégorie" maxlength="40" autocomplete="off">
+        <button type="submit" class="btn btn-ghost">Ajouter</button>
+      </form>
+
+      <p class="form-error" id="catError" hidden></p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" data-cats-close>Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script src="time-filter.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comptes — Finances</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ Navigation ============ -->
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="nav-link" href="index.html">Transactions</a>
+    <a class="nav-link" href="dashboard.html">Dashboard</a>
+    <a class="nav-link is-current" href="comptes.html" aria-current="page">Comptes</a>
+  </nav>
+
+  <!-- ============ En-tête de page ============ -->
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Finances personnelles</p>
+      <h1>Comptes</h1>
+    </div>
+  </header>
+
+  <!-- ============ Sélecteur de période ============ -->
+  <!-- Même composant que les autres pages, construit par time-filter.js -->
+  <section class="card period-card" aria-label="Période analysée">
+    <div id="timeBar"></div>
+  </section>
+
+  <!-- ============ Patrimoine ============ -->
+  <section class="card hero-card" aria-label="Patrimoine total">
+    <p class="stat-label">Patrimoine</p>
+    <p class="hero-value" id="wealthTotal">0,00 €</p>
+    <p class="hero-note" id="wealthNote">Compte courant + Épargne + Investissements</p>
+  </section>
+
+  <!-- ============ Les deux comptes ============ -->
+  <section class="accounts" aria-label="Soldes des comptes">
+
+    <article class="card account-card">
+      <div class="account-head">
+        <h2>Compte courant</h2>
+        <span class="badge">Dépenses · Revenus · Investissements</span>
+      </div>
+
+      <p class="account-balance" id="balanceCourant">0,00 €</p>
+
+      <label class="account-start" for="startCourant">
+        <span>Solde de départ</span>
+        <div class="input-affix">
+          <input type="number" id="startCourant" step="0.01" value="0">
+          <span class="affix">€</span>
+        </div>
+      </label>
+
+      <p class="account-detail" id="detailCourant"></p>
+    </article>
+
+    <article class="card account-card">
+      <div class="account-head">
+        <h2>Épargne</h2>
+        <span class="badge">Transferts</span>
+      </div>
+
+      <p class="account-balance" id="balanceEpargne">0,00 €</p>
+
+      <label class="account-start" for="startEpargne">
+        <span>Solde de départ</span>
+        <div class="input-affix">
+          <input type="number" id="startEpargne" step="0.01" value="0">
+          <span class="affix">€</span>
+        </div>
+      </label>
+
+      <p class="account-detail" id="detailEpargne"></p>
+    </article>
+
+    <article class="card account-card is-readonly">
+      <div class="account-head">
+        <h2>Investissements</h2>
+        <span class="badge">Actifs suivis</span>
+      </div>
+
+      <p class="account-balance" id="balanceInvest">0,00 €</p>
+
+      <p class="account-hint">
+        Cumul investi, toutes catégories. Alimenté par les transactions de type
+        Investissement, qui débitent le compte courant.
+      </p>
+
+      <ul class="account-breakdown" id="investBreakdown"></ul>
+    </article>
+  </section>
+
+  <script src="shared.js"></script>
+  <script src="time-filter.js"></script>
+  <script src="comptes.js"></script>
+</body>
+</html>

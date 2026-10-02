@@ -1,0 +1,6 @@
+# Données personnelles : exports de transactions
+transactions/
+transactions-*.json
+
+# Fichiers système macOS
+.DS_Store

@@ -1,0 +1,1851 @@
+/* =========================================================
+   Finances perso — feuille de style partagée
+   Base neutre (fonds, cartes, texte) ; la couleur est réservée aux données,
+   aux états sélectionnés et aux alertes.
+   ========================================================= */
+
+:root {
+  /* ---- Palette de marque ---- */
+  --color-anti-flash-white: #F2F3F4;   /* blanc cassé, fond de page */
+  --color-lace-cap:         #EBEAED;   /* gris très clair, surfaces creuses */
+  --color-midnight-blue:    #020035;   /* bleu quasi-noir */
+  --color-dark-royalty:     #02066F;   /* bleu foncé */
+  --color-deep-sea:         #2000B1;   /* bleu-violet vif */
+  --color-kimchi:           #ED4B00;   /* orange, unique accent chaud */
+
+  /* Teinte dérivée du bleu vif, éclaircie pour les grandes masses de données.
+     Contraste 5,1:1 sur blanc : lisible en aplat sous du texte clair. */
+  --color-deep-sea-soft:    #6A5AE0;
+
+  /* ---- Rôles ---- */
+  /* Éléments actifs et sélectionnés : remplace le noir plein d'origine. */
+  --active:        var(--color-dark-royalty);
+  --active-strong: var(--color-midnight-blue);   /* survol, état appuyé */
+  --on-active:     var(--color-anti-flash-white);/* texte sur fond actif, 14,8:1 */
+
+  /* Accent chaud, volontairement rare : erreurs et montants en alerte. */
+  --accent:    var(--color-kimchi);
+  --on-accent: var(--color-midnight-blue);       /* texte sur Kimchi, 5,3:1 */
+
+  /* ---- Séries de données ----
+     Quatre bleus plus l'accent ; combinés aux pointillés existants, ils
+     distinguent les huit courbes sans multiplier les teintes. */
+  --chart-1: var(--color-dark-royalty);
+  --chart-2: var(--color-deep-sea);
+  --chart-3: var(--color-deep-sea-soft);
+  --chart-4: var(--color-midnight-blue);
+  --chart-5: var(--color-kimchi);
+  --chart-6: #9AA0CF;                            /* bleu pâle, parts résiduelles */
+
+  /* Couleurs */
+  --bg: var(--color-anti-flash-white);   /* fond de page */
+  --surface: #ffffff;     /* fond des cartes */
+  --surface-alt: #fafafa; /* survol / zones secondaires */
+  --surface-sunken: var(--color-lace-cap);   /* creux : survol de chip, plage de dates */
+  --fg: #111113;          /* texte principal */
+  --fg-muted: #6b6b73;    /* texte secondaire */
+  --fg-faint: #9a9aa2;    /* labels, méta */
+  --border: #e6e6e9;
+  --border-strong: #d2d2d8;
+
+  /* Rayons */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+
+  /* Ombres douces */
+  --shadow-sm: 0 1px 2px rgba(17, 17, 19, .04), 0 1px 3px rgba(17, 17, 19, .06);
+  --shadow-md: 0 2px 4px rgba(17, 17, 19, .04), 0 8px 24px rgba(17, 17, 19, .07);
+  --shadow-lg: 0 8px 16px rgba(17, 17, 19, .08), 0 24px 60px rgba(17, 17, 19, .16);
+
+  /* Rythme */
+  --gap: 1rem;
+  --pad-card: 1.25rem;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 1.5rem 1rem 4rem;
+  max-width: 960px;
+  margin-inline: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 { margin: 0; font-weight: 600; letter-spacing: -.02em; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1rem; }
+p { margin: 0; }
+
+/* Icônes SVG en trait fin (dessinées sans fill) */
+.icon,
+.empty-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* ---------------------------------------------------------
+   En-tête
+   --------------------------------------------------------- */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.eyebrow {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--fg-faint);
+  margin-bottom: .35rem;
+}
+
+/* ---------------------------------------------------------
+   Carte générique
+   --------------------------------------------------------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------------------------------------------------------
+   Bandeau de statistiques
+   --------------------------------------------------------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat { padding: 1rem 1.1rem; }
+
+.stat-label {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-faint);
+  margin-bottom: .3rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------
+   Boutons
+   --------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .65rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, transform .12s ease, box-shadow .18s ease;
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--active);
+  color: var(--on-active);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover { background: var(--active-strong); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--fg-muted);
+  border-color: var(--border-strong);
+}
+.btn-ghost:hover { background: var(--surface-alt); color: var(--fg); }
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.btn-icon:hover { background: var(--surface-alt); color: var(--fg); }
+
+/* Focus visible et cohérent sur tous les contrôles */
+:is(button, input, select, a):focus-visible {
+  outline: 2px solid var(--active);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------
+   Liste : en-tête + filtres
+   --------------------------------------------------------- */
+.list-card { padding: var(--pad-card); }
+
+.list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.filters {
+  display: flex;
+  gap: .4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--pad-card) * -1);   /* laisse le scroll horizontal atteindre les bords */
+  padding: 0 var(--pad-card);
+}
+.filters::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex: none;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-muted);
+  font: inherit;
+  font-size: .8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.chip:hover { background: var(--surface-sunken); color: var(--fg); }
+.chip.is-active {
+  background: var(--active);
+  border-color: var(--active);
+  color: var(--on-active);
+}
+
+/* ---------------------------------------------------------
+   Barre de filtre temporel
+   --------------------------------------------------------- */
+.time-bar {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Ligne du haut : période exacte puis raccourcis, alignés à gauche.
+   Elle défile horizontalement en petit écran, comme les chips de mois. */
+.time-top {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  /* Surtout pas d'`overflow` ici : cette ligne contient le popover du calendrier,
+     positionné en absolu, et un conteneur de défilement le découperait — la mise
+     en `auto` d'un axe force l'autre à `auto`, donc le rognage serait vertical
+     aussi. Les trois boutons passent à la ligne plutôt que de défiler. */
+  flex-wrap: wrap;
+  row-gap: .4rem;
+  padding: 2px 0;
+}
+.time-top .chip { flex: none; }
+
+/* Ligne du bas : les 12 mois, puis l'année */
+.time-main {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* Variante compacte de .icon pour les chevrons et la petite icône calendrier */
+.icon-sm { width: 14px; height: 14px; }
+
+/* -- Gauche : bouton "Plus précis" + popover -- */
+.precise { position: relative; flex: none; }
+
+.chip-precise {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+/* -- Centre : chips de mois, même scroll masqué que la barre de types -- */
+.month-chips {
+  display: flex;
+  gap: .4rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;             /* laisse respirer l'anneau de focus */
+}
+.month-chips::-webkit-scrollbar { display: none; }
+
+/* -- Droite : sélecteur d'année, pilule cohérente avec les chips -- */
+.year-picker {
+  display: flex;
+  align-items: center;
+  gap: .1rem;
+  flex: none;
+  padding: .1rem .2rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.year-label {
+  min-width: 3.1em;
+  text-align: center;
+  font-size: .8rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+
+/* Petit bouton rond, utilisé pour les flèches d'année et de mois du calendrier */
+.step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.step:hover { background: var(--surface-alt); color: var(--fg); }
+
+/* Mode période exacte actif : la ligne mois/année est mise en retrait.
+   Elle reste cliquable — un clic repasse en mode mois/année. */
+.time-bar.is-range .time-main {
+  opacity: .4;
+}
+
+/* ---------------------------------------------------------
+   Popover du calendrier
+   --------------------------------------------------------- */
+.popover {
+  position: absolute;
+  top: calc(100% + .5rem);
+  left: 0;
+  z-index: 40;
+  width: min(288px, calc(100vw - 2.5rem));
+  padding: .9rem;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+  animation: pop-in .18s cubic-bezier(.2, .8, .3, 1) both;
+}
+.popover[hidden] { display: none; }
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .6rem;
+}
+
+.cal-title {
+  font-size: .85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cal-dow,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-dow {
+  margin-bottom: .3rem;
+  font-size: .68rem;
+  text-align: center;
+  color: var(--fg-faint);
+}
+
+/* Cellule de jour : ronde, palette de gris uniquement */
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font: inherit;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background .14s ease, color .14s ease;
+}
+.cal-day:hover { background: var(--surface-alt); }
+.cal-day.is-blank { visibility: hidden; cursor: default; }
+.cal-day.is-today { font-weight: 600; box-shadow: inset 0 0 0 1px var(--border-strong); }
+
+/* Jours compris entre les deux bornes */
+.cal-day.is-in-range {
+  background: var(--surface-sunken);
+  border-radius: 0;
+}
+
+/* Bornes de début et de fin */
+.cal-day.is-edge {
+  background: var(--active);
+  color: var(--on-active);
+  font-weight: 600;
+  box-shadow: none;
+}
+.cal-day.is-edge:hover { background: var(--active-strong); }
+
+.cal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-top: .75rem;
+  padding-top: .7rem;
+  border-top: 1px solid var(--border);
+}
+
+.cal-range {
+  font-size: .75rem;
+  color: var(--fg-muted);
+}
+
+/* Bouton discret de réinitialisation */
+.btn-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: .75rem;
+  color: var(--fg-faint);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .18s ease;
+}
+.btn-link:hover { color: var(--fg); }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------------------------------------------------------
+   Lignes de transaction
+   --------------------------------------------------------- */
+.tx-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tx {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: .85rem;
+  padding: .85rem .6rem;
+  border-radius: var(--r-md);
+  border-bottom: 1px solid var(--border);
+  transition: background .18s ease;
+  animation: rise .28s ease both;   /* petite entrée à l'ajout / au rendu */
+}
+.tx:last-child { border-bottom: none; }
+.tx:hover { background: var(--surface-alt); }
+
+/* Pastille de type : niveaux de gris, pas de couleur vive */
+.tx-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: .75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--fg-muted);
+}
+.tx-mark[data-type="revenu"]         { background: var(--active); border-color: var(--active); color: var(--on-active); }
+.tx-mark[data-type="depense"]        { background: #fff; border-color: var(--border-strong); color: var(--fg); }
+.tx-mark[data-type="investissement"] { background: #ebebee; border-color: var(--border-strong); color: var(--fg); }
+.tx-mark[data-type="transfert"]      { background: repeating-linear-gradient(45deg, #fff 0 4px, #ececef 4px 8px); border-color: var(--border-strong); color: var(--fg-muted); }
+
+.tx-main { min-width: 0; }
+
+.tx-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tx-meta {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-wrap: wrap;
+  margin-top: .2rem;
+  font-size: .8rem;
+  color: var(--fg-faint);
+}
+
+.badge {
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--fg-muted);
+  font-size: .72rem;
+  letter-spacing: .01em;
+}
+.badge-type[data-type="revenu"] { background: var(--active); border-color: var(--active); color: var(--on-active); }
+
+.dot { color: var(--border-strong); }
+
+.tx-right {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.tx-amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tx-amount.is-negative { color: var(--fg); }
+.tx-amount.is-positive { color: var(--fg); }
+.tx-amount.is-neutral  { color: var(--fg-muted); }
+
+/* Boutons dupliquer/supprimer : révélés au survol sur desktop, toujours visibles au tactile */
+.tx-action {
+  width: 30px;
+  height: 30px;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.tx:hover .tx-action,
+.tx-action:focus-visible { opacity: 1; }
+
+@media (hover: none) {
+  .tx-action { opacity: 1; }
+}
+
+/* ---------------------------------------------------------
+   État vide
+   --------------------------------------------------------- */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--fg-muted);
+}
+.empty-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--border-strong);
+  margin-bottom: .75rem;
+}
+.empty-title { font-weight: 600; color: var(--fg); }
+.empty-text { font-size: .875rem; margin-top: .25rem; }
+
+/* ---------------------------------------------------------
+   Modal
+   --------------------------------------------------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;          /* feuille qui remonte du bas en mobile */
+  justify-content: center;
+  padding: 0;
+}
+
+/* `display: flex` ci-dessus étant une règle auteur, elle l'emporte sur le
+   `[hidden] { display: none }` du navigateur : il faut masquer explicitement. */
+.modal[hidden] { display: none; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 0, 53, .38);
+  backdrop-filter: blur(2px);
+  animation: fade .2s ease both;
+}
+
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.35rem;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  box-shadow: var(--shadow-lg);
+  animation: slide-up .26s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+/* Fermeture : classe posée par le JS avant de masquer la modal */
+.modal.is-closing .modal-backdrop { animation: fade-out .18s ease both; }
+.modal.is-closing .modal-panel    { animation: slide-down .18s ease both; }
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+.modal-head h2 { font-size: 1.1rem; }
+
+/* ---------------------------------------------------------
+   Formulaire
+   --------------------------------------------------------- */
+.field { margin-bottom: .9rem; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+}
+
+label {
+  display: block;
+  margin-bottom: .35rem;
+  font-size: .78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--fg-faint);
+}
+
+input, select {
+  width: 100%;
+  padding: .7rem .85rem;
+  font: inherit;
+  font-size: .95rem;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  transition: border-color .18s ease, box-shadow .18s ease;
+  appearance: none;
+}
+
+input::placeholder { color: var(--fg-faint); }
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--active);
+  box-shadow: 0 0 0 3px rgba(2, 6, 111, .12);
+}
+
+/* Chevron du select, dessiné en CSS pour éviter une image */
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--fg-muted);
+  border-bottom: 1.5px solid var(--fg-muted);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+.select-wrap select { padding-right: 2.4rem; }
+
+/* Champ montant avec suffixe € */
+.input-affix { position: relative; }
+.input-affix .affix {
+  position: absolute;
+  right: .9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-faint);
+  font-size: .9rem;
+  pointer-events: none;
+}
+.input-affix input { padding-right: 2.2rem; }
+
+/* Masque les flèches du input[type=number] */
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Le filet Kimchi signale l'erreur ; le texte reste foncé pour le contraste. */
+.form-error {
+  margin: -.2rem 0 .8rem;
+  font-size: .82rem;
+  color: var(--fg);
+  background: var(--surface-alt);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: .5rem .7rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+  margin-top: 1.25rem;
+}
+
+/* Empêche le scroll de la page quand la modal est ouverte */
+body.no-scroll { overflow: hidden; }
+
+/* ---------------------------------------------------------
+   Animations
+   --------------------------------------------------------- */
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px) scale(.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes slide-down {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(24px) scale(.99); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   Desktop
+   --------------------------------------------------------- */
+@media (min-width: 640px) {
+  body { padding: 2.5rem 2rem 5rem; font-size: 16px; }
+
+  :root { --pad-card: 1.5rem; }
+
+  .stats { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+  h1 { font-size: 2rem; }
+
+  .modal { align-items: center; padding: 2rem 1rem; }
+
+  .modal-panel {
+    border-radius: var(--r-xl);
+    padding: 1.75rem;
+  }
+
+  .tx { padding: .95rem .75rem; }
+}
+
+/* ---------------------------------------------------------
+   Barre temporelle en petit écran
+   --------------------------------------------------------- */
+@media (max-width: 520px) {
+  /* La ligne du haut passe à la ligne, celle du bas garde son organisation
+     (mois au centre, année à droite) et fait défiler ses chips. */
+  .month-chips { min-width: 0; }
+}
+
+/* =========================================================
+   Navigation entre les pages
+   ========================================================= */
+.nav {
+  display: flex;
+  gap: .3rem;
+  margin-bottom: 1.5rem;
+}
+
+.nav-link {
+  padding: .35rem .8rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: background .18s ease, color .18s ease;
+}
+.nav-link:hover { background: var(--surface-alt); color: var(--fg); }
+
+.nav-link.is-current {
+  background: var(--active);
+  color: var(--on-active);
+}
+
+/* =========================================================
+   Dashboard
+   ========================================================= */
+
+/* Carte qui n'accueille que le sélecteur de période */
+.period-card {
+  padding: .85rem var(--pad-card);
+  margin-bottom: 1.25rem;
+}
+.period-card .time-bar { margin-bottom: 0; }
+
+/* Ligne d'appoint sous la valeur d'un indicateur */
+.stat-note {
+  margin-top: .2rem;
+  font-size: .72rem;
+  color: var(--fg-faint);
+}
+
+/* -- Cartes de visualisation -- */
+.viz-card {
+  padding: var(--pad-card);
+  margin-bottom: 1.25rem;
+}
+
+.viz-head { margin-bottom: 1rem; }
+
+.viz-note {
+  margin-top: .2rem;
+  font-size: .8rem;
+  color: var(--fg-faint);
+}
+
+/* Conteneur positionné : sert d'ancrage aux infobulles */
+.viz-body {
+  position: relative;
+  width: 100%;
+}
+.viz-body svg { display: block; width: 100%; }
+
+.viz-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: .875rem;
+  color: var(--fg-muted);
+}
+
+/* -- Infobulle commune au Sankey et au graphique -- */
+.tip {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: .12rem;
+  max-width: 15rem;
+  padding: .5rem .65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  font-size: .78rem;
+  color: var(--fg-muted);
+  pointer-events: none;   /* ne doit jamais intercepter le survol */
+  white-space: nowrap;
+}
+.tip[hidden] { display: none; }
+
+.tip strong {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.tip-row { font-variant-numeric: tabular-nums; }
+
+/* -- Sankey -- */
+/* Une couleur par nature de flux : la lecture des grandes masses prime sur
+   la nuance de poids, dont l'écart d'opacité est resserré en conséquence. */
+.flow {
+  fill: var(--flow-color, var(--color-dark-royalty));
+  stroke: none;
+  transition: fill-opacity .15s ease;
+  cursor: pointer;
+}
+/* Le survol porte sur le groupe : viser la zone élargie allume bien le ruban. */
+.flow:hover,
+.flow-group:hover .flow { fill-opacity: 1 !important; }
+
+/* Flux porté à l'épaisseur plancher : un liseré de la couleur du fond le détache
+   de son voisin, et son opacité rabaissée (posée par le JS) évite de le lire
+   comme un flux réellement épais. */
+.flow.is-boosted {
+  stroke: var(--surface);
+  stroke-width: .6;
+  stroke-linejoin: round;
+}
+
+/* Zone de survol élargie, invisible : rend un flux fin facile à viser, au doigt
+   comme à la souris. Seul le trait reçoit le pointeur, jamais l'intérieur. */
+.flow-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-linecap: round;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+/* Trait de rappel d'un libellé que l'anti-chevauchement a décalé de sa barre. */
+.flow-leader {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.flow.is-income         { --flow-color: var(--color-midnight-blue); }
+.flow.is-consommation   { --flow-color: var(--color-deep-sea-soft); }
+.flow.is-loyer          { --flow-color: var(--color-deep-sea); }
+.flow.is-investissement { --flow-color: var(--color-dark-royalty); }
+.flow.is-epargne        { --flow-color: var(--accent); }
+
+/* Les barres se posent par-dessus les rubans : sans cela elles créeraient une
+   bande morte au survol, juste là où le flux commence. */
+.node {
+  fill: var(--color-midnight-blue);
+  pointer-events: none;
+}
+
+/* `--sankey-fit` est posée sur le SVG par le JS : elle réduit d'un bloc toutes
+   les tailles de texte quand la carte est trop étroite pour la taille nominale. */
+.flow-label {
+  font-family: inherit;
+  /* Posés au-dessus des rubans, les libellés intercepteraient le pointeur et
+     rogneraient la zone de survol des flux fins, qu'ils recouvrent justement. */
+  pointer-events: none;
+  font-size: calc(10.5px * var(--sankey-fit, 1));
+  font-weight: 500;
+  fill: var(--fg);
+  /* Les libellés se superposent aux rubans : un liseré de la couleur du fond
+     les détache sans avoir à réserver des marges latérales. */
+  paint-order: stroke fill;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.flow-label.is-center {
+  font-size: calc(11px * var(--sankey-fit, 1));
+  font-weight: 600;
+}
+
+.flow-amount {
+  font-size: calc(9.5px * var(--sankey-fit, 1));
+  font-weight: 400;
+  fill: var(--fg-faint);
+}
+
+/* Flux fin : son épaisseur ne dit plus grand-chose, c'est le libellé qui porte
+   l'information. On lui rend donc un montant en pleine lisibilité. */
+.flow-label.is-thin .flow-amount { fill: var(--fg-muted); }
+
+/* -- Graphique multi-courbes -- */
+.series-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: 1.1rem;
+}
+
+.chip-serie {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+/* Aperçu du trait de la courbe, dans la chip */
+.swatch {
+  width: 16px;
+  height: 4px;
+  flex: none;
+  overflow: visible;
+}
+.swatch line {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.guide {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.axis-label {
+  font-family: inherit;
+  font-size: 10px;
+  fill: var(--fg-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Couleur de série, partagée par la courbe, ses points et sa chip.
+   Quatre bleus plus l'accent ; les pointillés existants lèvent les doublons. */
+[data-serie="depense"]        { --serie-color: var(--chart-2); }
+[data-serie="revenu"]         { --serie-color: var(--chart-1); }
+[data-serie="patrimoine"]     { --serie-color: var(--chart-5); }
+[data-serie="epargne"]        { --serie-color: var(--chart-4); }
+[data-serie="investissement"] { --serie-color: var(--chart-3); }
+[data-serie="tauxEpargne"]    { --serie-color: var(--chart-1); }
+[data-serie="tauxConso"]      { --serie-color: var(--chart-2); }
+[data-serie="tauxInvest"]     { --serie-color: var(--chart-4); }
+
+.serie-line {
+  fill: none;
+  stroke: var(--serie-color);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.serie-dot {
+  fill: var(--serie-color);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+/* Une chip active prend la couleur de la courbe qu'elle représente. */
+.chip-serie.is-active {
+  background: var(--serie-color);
+  border-color: var(--serie-color);
+  color: var(--on-active);
+}
+
+/* Kimchi est trop clair pour du texte blanc : on y pose le bleu foncé. */
+.chip-serie[data-serie="patrimoine"].is-active { color: var(--on-accent); }
+
+/* Le trait d'aperçu garde la couleur de la série tant que la chip est inactive. */
+.chip-serie .swatch line { stroke: var(--serie-color); }
+.chip-serie.is-active .swatch line { stroke: currentColor; }
+
+/* =========================================================
+   Export / import JSON
+   ========================================================= */
+
+/* Groupe de boutons de l'en-tête : passe à la ligne en petit écran */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* Message d'import/export : reprend .form-error, repositionné hors modal */
+.page-notice {
+  margin: 0 0 1.25rem;
+}
+
+/* Variante succès : même cadre, ton plus discret que l'erreur */
+.page-notice.is-ok {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--fg-muted);
+}
+
+/* Modal de confirmation : plus étroite que le formulaire d'ajout */
+.modal-panel-sm { max-width: 400px; }
+
+.confirm-text {
+  font-size: .9rem;
+  line-height: 1.55;
+  color: var(--fg-muted);
+}
+
+/* =========================================================
+   Gestion des catégories
+   ========================================================= */
+
+/* Onglets : mêmes chips que les filtres, avec scroll masqué en petit écran */
+.cat-tabs {
+  display: flex;
+  gap: .4rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+.cat-tabs::-webkit-scrollbar { display: none; }
+
+.cat-list {
+  list-style: none;
+  margin: 0 0 .9rem;
+  padding: 0;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .1rem .35rem .2rem;
+  border-bottom: 1px solid var(--border);
+}
+.cat-row:last-child { border-bottom: none; }
+
+/* Le nom est un bouton : le cliquer passe en renommage */
+.cat-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: .25rem .3rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: .9rem;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background .18s ease;
+}
+.cat-name:hover { background: var(--surface-alt); }
+
+/* "Autre" n'est ni renommable ni supprimable */
+.cat-name.is-static {
+  cursor: default;
+  color: var(--fg-muted);
+}
+.cat-name.is-static:hover { background: none; }
+
+.cat-lock {
+  font-size: .7rem;
+  color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+/* Champ de renommage en place */
+.cat-edit {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: .3rem .5rem;
+  font-size: .9rem;
+  border-radius: var(--r-sm);
+}
+
+.cat-actions {
+  display: flex;
+  align-items: center;
+  gap: .1rem;
+  flex: none;
+}
+
+/* Variante compacte de .btn-icon pour les lignes de catégorie */
+.btn-icon-sm {
+  width: 28px;
+  height: 28px;
+}
+
+/* Ligne d'ajout */
+.cat-add {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+.cat-add input { flex: 1 1 auto; min-width: 0; }
+.cat-add .btn { flex: none; }
+
+/* La confirmation se superpose aux autres modals */
+.modal-confirm { z-index: 60; }
+
+/* =========================================================
+   Édition inline dans la liste
+   ========================================================= */
+
+/* Étiquettes devenues cliquables : on neutralise l'apparence de bouton
+   sans toucher aux styles .badge / .tx-amount qu'elles conservent. */
+.tx-chip {
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  text-align: inherit;
+}
+
+/* Variante texte simple : catégorie et date */
+.tx-chip-text {
+  padding: .1rem .35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.tx-chip-text:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--fg);
+}
+
+/* Le badge de type garde son fond, on n'ajoute que l'affordance au survol */
+.badge.tx-chip { transition: border-color .18s ease, background .18s ease; }
+.badge.tx-chip:hover { border-color: var(--fg-muted); }
+
+/* Le montant reste aligné à droite et hérite de la taille de la ligne */
+.tx-amount.tx-chip {
+  padding: .1rem .25rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  font-size: inherit;
+  transition: background .18s ease, border-color .18s ease;
+}
+.tx-amount.tx-chip:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+
+/* -- Contrôles d'édition inline --
+   Variante compacte des champs du formulaire : même bordure, même arrondi,
+   même anneau de focus. */
+.tx-edit {
+  padding: .22rem .45rem;
+  font-family: inherit;
+  font-size: .8rem;
+  line-height: 1.3;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  max-width: 100%;
+  width: auto;
+}
+
+.tx-edit:focus {
+  outline: none;
+  border-color: var(--active);
+  box-shadow: 0 0 0 3px rgba(2, 6, 111, .12);
+}
+
+/* Chevron du select inline, dessiné en data-URI pour rester sans dépendance */
+.tx-edit-select {
+  padding-right: 1.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236b6b73' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .45rem center;
+  background-size: 8px 5px;
+}
+
+.tx-edit-date { font-variant-numeric: tabular-nums; }
+
+/* Le montant s'édite aligné à droite, dans la colonne existante */
+.tx-edit-amount {
+  width: 6.5rem;
+  text-align: right;
+  font-size: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 420px) {
+  .tx-edit-amount { width: 5.5rem; }
+}
+
+/* =========================================================
+   Sankey : tout le diagramme dans sa carte
+   ========================================================= */
+
+/* Le diagramme se redimensionne pour tenir dans sa carte, en largeur comme en
+   hauteur : aucun défilement interne, dans aucune direction. */
+.viz-body .sankey-svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* =========================================================
+   Graphique : défilement horizontal des longues périodes
+   ========================================================= */
+
+/* À la semaine, une année entière dépasse la largeur de la carte. Le pas entre
+   deux points reste alors lisible et c'est la zone qui défile, latéralement et
+   elle seule — la classe n'est posée que quand le tracé déborde vraiment. */
+.viz-body.is-scrollable {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.viz-body.is-scrollable > svg {
+  width: auto;
+  max-width: none;
+}
+
+/* =========================================================
+   Remboursements liés
+   ========================================================= */
+
+/* Badge du lien, sur la ligne du remboursement */
+.badge-link {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dépense remboursée : montant d'origine barré, puis montant net */
+.tx-amount-gross {
+  margin-right: .35rem;
+  color: var(--fg-faint);
+  font-weight: 400;
+  text-decoration-thickness: 1px;
+}
+
+.tx-amount-net { color: var(--fg); }
+
+/* -- Bloc "Lier à une dépense" dans le formulaire -- */
+.label-hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--fg-faint);
+}
+
+.btn-block {
+  width: 100%;
+  justify-content: center;
+}
+
+.link-picker {
+  margin-top: .6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: .6rem;
+  background: var(--surface-alt);
+}
+.link-picker[hidden] { display: none; }
+
+.link-picker input { background: var(--surface); }
+
+.link-list {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+/* Une dépense proposée : nom, montant + date, reste à rembourser */
+.link-row {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  width: 100%;
+  padding: .45rem .55rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: .85rem;
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+.link-row:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--border-strong);
+}
+.link-row:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.link-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link-meta {
+  flex: none;
+  font-size: .75rem;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.link-left {
+  flex: none;
+  font-size: .7rem;
+  color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+.link-empty {
+  padding: .6rem .2rem .2rem;
+  font-size: .8rem;
+  color: var(--fg-faint);
+}
+
+/* Résumé du lien retenu */
+.link-chosen {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .5rem;
+}
+.link-chosen[hidden] { display: none; }
+
+@media (max-width: 420px) {
+  .link-row { flex-wrap: wrap; gap: .15rem .5rem; }
+  .link-name { flex-basis: 100%; }
+}
+
+/* =========================================================
+   Page Comptes
+   ========================================================= */
+
+/* Carte de tête : le patrimoine, mis en avant */
+.hero-card {
+  padding: 1.5rem var(--pad-card);
+  margin-bottom: 1.25rem;
+}
+
+.hero-value {
+  margin-top: .3rem;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-note {
+  margin-top: .3rem;
+  font-size: .8rem;
+  color: var(--fg-faint);
+}
+
+.accounts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.account-card { padding: var(--pad-card); }
+
+.account-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  flex-wrap: wrap;
+  margin-bottom: .75rem;
+}
+
+.account-balance {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Saisie du solde de départ */
+.account-start {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-top: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--border);
+}
+
+.account-start > span {
+  font-size: .78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--fg-faint);
+}
+
+.account-start .input-affix { width: 9rem; flex: none; }
+.account-start input { text-align: right; padding-right: 2rem; }
+
+.account-detail,
+.account-hint {
+  margin-top: .75rem;
+  font-size: .78rem;
+  color: var(--fg-faint);
+  line-height: 1.5;
+}
+
+/* Détail par catégorie d'investissement */
+.account-breakdown {
+  list-style: none;
+  margin: .9rem 0 0;
+  padding: .9rem 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .3rem 0;
+  font-size: .875rem;
+}
+
+.breakdown-label { color: var(--fg-muted); }
+
+.breakdown-value {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown-empty {
+  font-size: .8rem;
+  color: var(--fg-faint);
+}
+
+@media (min-width: 720px) {
+  .accounts { grid-template-columns: repeat(3, 1fr); }
+  .hero-value { font-size: 2.75rem; }
+}
+
+/* =========================================================
+   Donut de répartition
+   ========================================================= */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.donut-body {
+  flex: none;
+  width: min(240px, 100%);
+}
+.donut-body svg { width: 100%; height: auto; margin-inline: auto; }
+
+/* Cycle de six teintes, réutilisé par les parts et par leur pastille de légende. */
+[data-shade="0"] { --slice-color: var(--chart-1); }
+[data-shade="1"] { --slice-color: var(--chart-2); }
+[data-shade="2"] { --slice-color: var(--chart-3); }
+[data-shade="3"] { --slice-color: var(--chart-4); }
+[data-shade="4"] { --slice-color: var(--chart-5); }
+[data-shade="5"] { --slice-color: var(--chart-6); }
+
+.slice {
+  fill: var(--slice-color);
+  stroke: var(--surface);
+  stroke-width: 2;
+  transition: opacity .15s ease;
+  cursor: pointer;
+}
+.slice:hover { opacity: .78; }
+
+/* L'anneau du cas « une seule part » est tracé au trait, pas en aplat. */
+.slice.is-ring { fill: none; stroke: var(--slice-color); }
+
+.donut-total {
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  fill: var(--fg);
+}
+
+.donut-caption {
+  font-family: inherit;
+  font-size: 10px;
+  fill: var(--fg-faint);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Légende */
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.legend-row {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .85rem;
+}
+.legend-row:last-child { border-bottom: none; }
+
+.legend-swatch {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  align-self: center;
+  background: var(--slice-color);
+}
+
+.legend-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend-value {
+  flex: none;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-share {
+  flex: none;
+  width: 4rem;
+  text-align: right;
+  font-size: .78rem;
+  color: var(--fg-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Alerte sur un montant négatif
+   ========================================================= */
+
+/* Kimchi n'est appliqué qu'aux valeurs en grands caractères gras : à cette
+   taille le contraste de 3,8:1 sur blanc satisfait le seuil AA « large text ».
+   Les montants de la liste, plus petits, restent en gris foncé. */
+.stat-value.is-alert,
+.account-balance.is-alert,
+.hero-value.is-alert {
+  color: var(--accent);
+}
+
+/* =========================================================
+   Import par collage de code
+   ========================================================= */
+
+/* Même habillage que les autres champs, en version multi-lignes monospace :
+   le JSON collé reste lisible et l'indentation ne saute pas. */
+.paste-input {
+  width: 100%;
+  padding: .7rem .85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .82rem;
+  line-height: 1.6;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  transition: border-color .18s ease, box-shadow .18s ease;
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.paste-input::placeholder { color: var(--fg-faint); }
+
+.paste-input:focus {
+  outline: none;
+  border-color: var(--active);
+  box-shadow: 0 0 0 3px rgba(2, 6, 111, .12);
+}
+
+/* `.btn` impose `display: inline-flex` : il faut masquer explicitement, comme
+   pour .modal, sinon le `[hidden]` du navigateur reste sans effet. */
+.paste-confirm[hidden] { display: none; }
+
+.paste-hint {
+  margin-top: .45rem;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--fg-faint);
+}
+
+/* Résumé de contrôle : même cadre que .form-error, sans le filet d'alerte */
+.paste-summary {
+  margin: -.2rem 0 .8rem;
+  padding: .6rem .75rem;
+  font-size: .82rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--active);
+  border-radius: var(--r-sm);
+}
+
+.paste-summary-title {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.paste-summary-list {
+  list-style: none;
+  margin: .35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .9rem;
+  color: var(--fg-muted);
+}
+
+.paste-summary-list li::before { content: "· "; color: var(--fg-faint); }
+
+/* =========================================================
+   Filtre par catégorie (liste des transactions)
+   ========================================================= */
+
+/* Ancre du popover, à côté des chips de type */
+.cat-filter { position: relative; }
+
+/* Le popover s'aligne sur le bord droit de sa chip : posé à gauche, il
+   déborderait de la carte quand la chip est elle-même à droite. */
+.popover-right {
+  left: auto;
+  right: 0;
+  width: min(340px, calc(100vw - 2.5rem));
+}
+
+.chip-cats {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+/* Compteur de catégories retenues, dans la chip d'ouverture */
+.chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 .25rem;
+  border-radius: 999px;
+  background: var(--on-active);
+  color: var(--active);
+  font-size: .68rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.chip-count[hidden] { display: none; }
+
+.cat-filter-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.cat-filter-title {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* Liste des catégories : un bloc par type, pour lever l'ambiguïté des
+   libellés partagés (« Autre » existe dans les quatre types). */
+.cat-filter-groups {
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  max-height: min(48vh, 340px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.cat-filter-label {
+  margin-bottom: .35rem;
+  font-size: .68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--fg-faint);
+}
+
+.cat-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.cat-chip {
+  font-size: .75rem;
+  padding: .28rem .6rem;
+}
+.cat-chip:hover { background: var(--surface-sunken); }
+
+/* Sélection active : chaque type reprend la couleur de son flux dans le Sankey,
+   pour que les deux vues se lisent avec le même code couleur. */
+.cat-chip.is-on {
+  color: var(--on-active);
+  background: var(--cat-color, var(--active));
+  border-color: var(--cat-color, var(--active));
+}
+.cat-chip.is-on:hover { background: var(--cat-color, var(--active)); }
+
+.cat-chip[data-cat-type="revenu"]         { --cat-color: var(--chart-4); }
+.cat-chip[data-cat-type="depense"]        { --cat-color: var(--chart-3); }
+.cat-chip[data-cat-type="investissement"] { --cat-color: var(--chart-1); }
+.cat-chip[data-cat-type="transfert"]      { --cat-color: var(--chart-2); }
+
+.cat-filter-hint {
+  margin-top: .7rem;
+  font-size: .72rem;
+  color: var(--fg-faint);
+}

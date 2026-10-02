@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — Finances</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ Navigation ============ -->
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="nav-link" href="index.html">Transactions</a>
+    <a class="nav-link is-current" href="dashboard.html" aria-current="page">Dashboard</a>
+    <a class="nav-link" href="comptes.html">Comptes</a>
+  </nav>
+
+  <!-- ============ En-tête de page ============ -->
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Finances personnelles</p>
+      <h1>Dashboard</h1>
+    </div>
+  </header>
+
+  <!-- ============ Sélecteur de période ============ -->
+  <!-- Même composant que la page Transactions, construit par time-filter.js -->
+  <section class="card period-card" aria-label="Période analysée">
+    <div id="timeBar"></div>
+  </section>
+
+  <!-- ============ Indicateurs clés ============ -->
+  <section class="stats" aria-label="Indicateurs de la période">
+    <article class="card stat">
+      <p class="stat-label">Revenus</p>
+      <p class="stat-value" id="kpiIncome">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Dépenses</p>
+      <p class="stat-value" id="kpiExpense">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Investissement</p>
+      <p class="stat-value" id="kpiInvest">0,00 €</p>
+    </article>
+    <article class="card stat">
+      <p class="stat-label">Patrimoine</p>
+      <p class="stat-value" id="kpiWealth">0,00 €</p>
+      <p class="stat-note" id="kpiWealthNote"></p>
+    </article>
+  </section>
+
+  <!-- ============ Sankey des flux ============ -->
+  <section class="card viz-card" aria-label="Flux de la période">
+    <div class="viz-head">
+      <h2>Flux</h2>
+      <p class="viz-note">Revenus par catégorie → dépenses, investissement et épargne</p>
+    </div>
+
+    <!-- SVG construit par dashboard.js -->
+    <div class="viz-body" id="sankeyBody">
+      <svg id="sankey" class="sankey-svg" role="img" aria-label="Diagramme de flux des revenus vers les dépenses"></svg>
+      <div class="tip" id="sankeyTip" hidden></div>
+    </div>
+
+    <p class="viz-empty" id="sankeyEmpty" hidden>Aucun flux sur la période sélectionnée.</p>
+  </section>
+
+  <!-- ============ Graphique multi-courbes ============ -->
+  <section class="card viz-card" aria-label="Évolution hebdomadaire">
+    <div class="viz-head">
+      <h2>Évolution</h2>
+      <p class="viz-note">Une semaine par point · cliquez une série pour l’afficher ou la masquer</p>
+    </div>
+
+    <!-- Chips de séries, générées par dashboard.js -->
+    <div class="series-chips" id="seriesChips" role="group" aria-label="Séries affichées"></div>
+
+    <div class="viz-body" id="chartBody">
+      <svg id="chart" role="img" aria-label="Évolution hebdomadaire des séries sélectionnées"></svg>
+      <div class="tip" id="chartTip" hidden></div>
+    </div>
+
+    <p class="viz-empty" id="chartEmpty" hidden>Sélectionnez au moins une série à afficher.</p>
+  </section>
+
+  <!-- ============ Répartition du patrimoine ============ -->
+  <section class="card viz-card" aria-label="Répartition du patrimoine">
+    <div class="viz-head">
+      <h2>Répartition</h2>
+      <p class="viz-note">Patrimoine par type d’actif, à la fin de la période</p>
+    </div>
+
+    <div class="donut-wrap">
+      <div class="viz-body donut-body" id="donutBody">
+        <svg id="donut" role="img" aria-label="Répartition du patrimoine par type d’actif"></svg>
+        <div class="tip" id="donutTip" hidden></div>
+      </div>
+
+      <!-- Légende, construite par dashboard.js -->
+      <ul class="donut-legend" id="donutLegend"></ul>
+    </div>
+
+    <p class="viz-empty" id="donutEmpty" hidden>Patrimoine nul ou négatif sur la période : rien à répartir.</p>
+  </section>
+
+  <script src="shared.js"></script>
+  <script src="time-filter.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
